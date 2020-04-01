@@ -36,6 +36,13 @@ namespace MheanMaa.Controllers
             }).ToList();
         }
 
+        [AllowAnonymous]
+        [HttpGet("visitor")]
+        public ActionResult<List<DonateVisitor>> GetForVisitor()
+        {
+            return _donateService.GetAcceptedDonates().Select(don => (DonateVisitor) don).ToList();
+        }
+
         [HttpGet("{id:length(24)}", Name = "GetDonate")]
         public ActionResult<Donate> Get(string id)
         {

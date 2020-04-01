@@ -39,4 +39,34 @@ namespace MheanMaa.Models
 
         public bool Accepted { get; set; }
     }
+
+    public class DonateVisitor
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        public string Title { get; set; }
+
+        public double AcceptedOn { get; set; }
+
+        public string Description { get; set; }
+
+        public string QrLink { get; set; }
+
+        public string ImgPath { get; set; }
+
+        public static explicit operator DonateVisitor(Donate d)
+        {
+            return new DonateVisitor
+            {
+                Id = d.Id,
+                Title = d.Title,
+                AcceptedOn = d.AcceptedOn,
+                Description = d.Description,
+                QrLink = d.QrLink,
+                ImgPath = d.ImgPath,
+            };
+        }
+    }
 }

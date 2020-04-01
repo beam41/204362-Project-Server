@@ -27,6 +27,9 @@ namespace MheanMaa.Services
         public Donate Get(string id, int deptNo) =>
             _donates.Find(don => don.Id == id && don.DeptNo == deptNo).FirstOrDefault();
 
+        public List<Donate> GetAcceptedDonates() =>
+            _donates.Find(don => don.Accepted).ToList();
+
         public Donate Create(Donate newDon)
         {
             _donates.InsertOne(newDon);
