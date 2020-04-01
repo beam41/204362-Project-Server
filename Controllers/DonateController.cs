@@ -102,14 +102,17 @@ namespace MheanMaa.Controllers
             }
 
             // no reaccept
-            if (don.Accepted == false)
+            if (don.Accepted == false && user.UserType == "A")
             {
                 don.Accepted = true;
                 don.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _donateService.Update(id, don);
+            } 
+            else if (user.UserType != "A")
+            {
+                return Unauthorized();
             }
             
-
             return NoContent();
         }
 
