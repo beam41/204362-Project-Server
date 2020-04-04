@@ -87,7 +87,7 @@ namespace MheanMaa.Controllers
             }
 
             // prevent change
-            don.Accepted = false;
+            donIn.Accepted = false;
             donIn.Creator = don.Creator;
             donIn.DeptNo = don.DeptNo;
             _donateService.Update(id, donIn);
