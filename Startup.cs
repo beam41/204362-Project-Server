@@ -98,7 +98,7 @@ namespace MheanMaa
 
             app.UseStaticFiles();
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
