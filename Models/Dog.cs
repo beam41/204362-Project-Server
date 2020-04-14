@@ -58,4 +58,16 @@ namespace MheanMaa.Models
 
         public string Caretaker { get; set; }
     }
+
+    public class DogVisitor
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+
+        public string Id { get; set; }
+
+        public string[] Name { get; set; }
+
+        public string ImgPath { get; set; }
+    }
 }

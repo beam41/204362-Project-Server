@@ -64,6 +64,19 @@ namespace MheanMaa.Controllers
             return CreatedAtRoute("GetDog", new { id = dog.Id.ToString() }, dog);
         }
 
+        [AllowAnonymous]
+        [HttpGet("visitor")]
+        public ActionResult<List<DogVisitor>> GetForVisitor()
+        {
+            return _dogService.Get().Select(dog => new DogVisitor
+            {
+                Id = dog.Id,
+                Name = dog.Name,
+                ImgPath = dog.ImgPath,
+
+            }).ToList();
+        }
+
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Dog dogIn)
         {
