@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MheanMaa.Enum;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static MheanMaa.Util.ClaimSearch;
 
 namespace MheanMaa.Controllers
 {
@@ -14,20 +16,26 @@ namespace MheanMaa.Controllers
     public class NewsController : ControllerBase
     {
         private readonly NewsService _newsService;
-        private readonly UserService _userService;
 
-        public NewsController(NewsService newsService, UserService userService)
+        public NewsController(NewsService newsService)
         {
             _newsService = newsService;
-            _userService = userService;
         }
 
         [HttpGet("list")]
         public ActionResult<List<NewsList>> Get()
         {
-            User user = _userService.Find(User.Identity.Name);
-
-            return _newsService.Get(user.DeptNo).Select(news => new NewsList
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                return _newsService.Get().Select(news => new NewsList
+                {
+                    Id = news.Id,
+                    Title = news.Title,
+                    Writer = news.Writer,
+                    Accepted = news.Accepted
+                }).ToList();
+            }
+            return _newsService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(news => new NewsList
             {
                 Id = news.Id,
                 Title = news.Title,
@@ -36,11 +44,26 @@ namespace MheanMaa.Controllers
             }).ToList();
         }
 
+        [AllowAnonymous]
+        [HttpGet("visitor")]
+        public ActionResult<List<NewsVisitor>> GetForVisitor()
+        {
+            return _newsService.GetAcceptedNews().Select(news => (NewsVisitor)news).ToList();
+        }
+
         [HttpGet("{id:length(24)}", Name = "GetNews")]
         public ActionResult<News> Get(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            News news = _newsService.Get(id, user.DeptNo);
+            News news;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                news = _newsService.Get(id);
+            }
+            else
+            {
+                news = _newsService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
+
 
             if (news == null)
             {
@@ -53,41 +76,39 @@ namespace MheanMaa.Controllers
         [HttpPost]
         public ActionResult<News> Create(News news)
         {
-            //fetch
-            User user = _userService.Find(User.Identity.Name);
-
             // prevent change
             news.Accepted = false;
-            news.Writer = user.FirstName;
-            news.DeptNo = user.DeptNo;
+            news.Writer = GetClaim(User, ClaimEnum.FirstName);
+            news.DeptNo = int.Parse(GetClaim(User, ClaimEnum.DeptNo));
             // create
             _newsService.Create(news);
 
             return CreatedAtRoute("GetNews", new { id = news.Id.ToString() }, news);
         }
 
-        [AllowAnonymous]
-        [HttpGet("visitor")]
-        public ActionResult<List<NewsVisitor>> GetForVisitor()
-        {
-            return _newsService.GetAcceptedNews().Select(news => (NewsVisitor)news).ToList();
-        }
-
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, News newsIn)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            News news = _newsService.Get(id, user.DeptNo);
+            News news;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                news = _newsService.Get(id);
+            }
+            else
+            {
+                news = _newsService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
-            // not found (bc wrong dept or no donate record)
+            // not found (bc wrong dept or no news record)
             if (news == null)
             {
                 return NotFound();
             }
 
             // prevent change
-            news.Accepted = false;
+            newsIn.Id = news.Id;
+            newsIn.Accepted = false;
             newsIn.Writer = news.Writer;
             newsIn.DeptNo = news.DeptNo;
             _newsService.Update(id, newsIn);
@@ -99,23 +120,33 @@ namespace MheanMaa.Controllers
         public IActionResult Accept(string id)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            News news = _newsService.Get(id, user.DeptNo);
+            News news;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                news = _newsService.Get(id);
+            }
+            else
+            {
+                news = _newsService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
-            // not found (bc wrong dept or no donate record)
+            // not found (bc wrong dept or no news record)
             if (news == null)
             {
                 return NotFound();
             }
 
             // no reaccept
-            if (news.Accepted == false)
+            if (news.Accepted == false && GetClaim(User, ClaimEnum.UserType) == "A")
             {
                 news.Accepted = true;
                 news.AcceptedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _newsService.Update(id, news);
             }
-            
+            else if (GetClaim(User, ClaimEnum.UserType) != "A")
+            {
+                return Unauthorized();
+            }
 
             return NoContent();
         }
@@ -123,8 +154,15 @@ namespace MheanMaa.Controllers
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            News news = _newsService.Get(id, user.DeptNo);
+            News news;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                news = _newsService.Get(id);
+            }
+            else
+            {
+                news = _newsService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (news == null)
             {

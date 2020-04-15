@@ -81,6 +81,8 @@ namespace MheanMaa
             services.AddSingleton<UserService>();
             services.AddSingleton<AuthenticationService>();
             services.AddSingleton<ImageService>();
+            services.AddSingleton<NewsService>();
+            services.AddSingleton<ReportService>();
 
             services.AddControllers();
 

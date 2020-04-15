@@ -13,6 +13,7 @@ namespace MheanMaa.Services
         {
             MongoClient client = new MongoClient(settings.ConnectionString);
             IMongoDatabase database = client.GetDatabase(settings.DBName);
+
             _news = database.GetCollection<News>(settings.NewsColName);
         }
 
@@ -25,6 +26,9 @@ namespace MheanMaa.Services
         public News Get(string id, int deptNo) =>
             _news.Find(news => news.Id == id && news.DeptNo == deptNo).FirstOrDefault();
 
+        public News Get(string id) =>
+            _news.Find(news => news.Id == id).FirstOrDefault();
+
         public List<News> GetAcceptedNews() =>
             _news.Find(news => news.Accepted).ToList();
 
@@ -33,10 +37,13 @@ namespace MheanMaa.Services
             _news.InsertOne(newNews);
             return newNews;
         }
+
         public void Update(string id, News newsIn) =>
             _news.ReplaceOne(news => news.Id == id, newsIn);
+
         public void Remove(News newsIn) =>
             _news.DeleteOne(news => news.Id == newsIn.Id);
+
         public void Remove(string id) =>
             _news.DeleteOne(news => news.Id == id);
     }

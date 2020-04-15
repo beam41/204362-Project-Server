@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MheanMaa.Enum;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static MheanMaa.Util.ClaimSearch;
 
 namespace MheanMaa.Controllers
 {
@@ -14,20 +16,26 @@ namespace MheanMaa.Controllers
     public class ReportController : ControllerBase
     {
         private readonly ReportService _reportService;
-        private readonly UserService _userService;
 
-        public ReportController(ReportService reportService, UserService userService)
+        public ReportController(ReportService reportService)
         {
             _reportService = reportService;
-            _userService = userService;
         }
 
         [HttpGet("list")]
         public ActionResult<List<ReportList>> Get()
         {
-            User user = _userService.Find(User.Identity.Name);
-
-            return _reportService.Get(user.DeptNo).Select(rep => new ReportList
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                return _reportService.Get().Select(rep => new ReportList
+                {
+                    Id = rep.Id,
+                    Title = rep.Title,
+                    Reporter = rep.Reporter,
+                    Accepted = rep.Accepted
+                }).ToList();
+            }
+            return _reportService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(rep => new ReportList
             {
                 Id = rep.Id,
                 Title = rep.Title,
@@ -46,8 +54,16 @@ namespace MheanMaa.Controllers
         [HttpGet("{id:length(24)}", Name = "GetReport")]
         public ActionResult<Report> Get(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            Report rep = _reportService.Get(id, user.DeptNo);
+            Report rep;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                rep = _reportService.Get(id);
+            }
+            else
+            {
+                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
+
 
             if (rep == null)
             {
@@ -60,13 +76,10 @@ namespace MheanMaa.Controllers
         [HttpPost]
         public ActionResult<Report> Create(Report rep)
         {
-            //fetch
-            User user = _userService.Find(User.Identity.Name);
-
             // prevent change
             rep.Accepted = false;
-            rep.Reporter = user.FirstName;
-            rep.DeptNo = user.DeptNo;
+            rep.Reporter = GetClaim(User, ClaimEnum.FirstName);
+            rep.DeptNo = int.Parse(GetClaim(User, ClaimEnum.DeptNo));
             // create
             _reportService.Create(rep);
 
@@ -77,17 +90,25 @@ namespace MheanMaa.Controllers
         public IActionResult Update(string id, Report repIn)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            Report rep = _reportService.Get(id, user.DeptNo);
+            Report rep;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                rep = _reportService.Get(id);
+            }
+            else
+            {
+                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
-            // not found (bc wrong dept or no report record)
+            // not found (bc wrong dept or no donate record)
             if (rep == null)
             {
                 return NotFound();
             }
 
             // prevent change
-            rep.Accepted = false;
+            repIn.Id = rep.Id;
+            repIn.Accepted = false;
             repIn.Reporter = rep.Reporter;
             repIn.DeptNo = rep.DeptNo;
             _reportService.Update(id, repIn);
@@ -99,23 +120,33 @@ namespace MheanMaa.Controllers
         public IActionResult Accept(string id)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            Report rep = _reportService.Get(id, user.DeptNo);
+            Report rep;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                rep = _reportService.Get(id);
+            }
+            else
+            {
+                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
-            // not found (bc wrong dept or no report record)
+            // not found (bc wrong dept or no donate record)
             if (rep == null)
             {
                 return NotFound();
             }
 
             // no reaccept
-            if (rep.Accepted == false)
+            if (rep.Accepted == false && GetClaim(User, ClaimEnum.UserType) == "A")
             {
                 rep.Accepted = true;
                 rep.AcceptedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _reportService.Update(id, rep);
             }
-
+            else if (GetClaim(User, ClaimEnum.UserType) != "A")
+            {
+                return Unauthorized();
+            }
 
             return NoContent();
         }
@@ -123,8 +154,15 @@ namespace MheanMaa.Controllers
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            Report rep = _reportService.Get(id, user.DeptNo);
+            Report rep;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                rep = _reportService.Get(id);
+            }
+            else
+            {
+                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (rep == null)
             {

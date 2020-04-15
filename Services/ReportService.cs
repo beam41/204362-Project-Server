@@ -27,6 +27,9 @@ namespace MheanMaa.Services
         public Report Get(string id, int deptNo) =>
             _reports.Find(rep => rep.Id == id && rep.DeptNo == deptNo).FirstOrDefault();
 
+        public Report Get(string id) =>
+            _reports.Find(rep => rep.Id == id).FirstOrDefault();
+
         public List<Report> GetAcceptedReports() =>
             _reports.Find(rep => rep.Accepted).ToList();
 
