@@ -1,10 +1,12 @@
-﻿using MheanMaa.Models;
+﻿using MheanMaa.Enum;
+using MheanMaa.Models;
 using MheanMaa.Settings;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 
 namespace MheanMaa.Services
 {
@@ -34,7 +36,10 @@ namespace MheanMaa.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimEnum.Id.ToString(), user.Id),
+                    new Claim(ClaimEnum.UserType.ToString(), user.UserType),
+                    new Claim(ClaimEnum.DeptNo.ToString(), user.DeptNo.ToString()),
+                    new Claim(ClaimEnum.FirstName.ToString(), user.FirstName)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

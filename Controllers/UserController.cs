@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using MheanMaa.Models;
 using MheanMaa.Services;
+using System.Security.Claims;
+using System;
+using static MheanMaa.Util.ClaimSearch;
+using MheanMaa.Enum;
 
 namespace MheanMaa.Controllers
 {
@@ -33,7 +37,7 @@ namespace MheanMaa.Controllers
         [HttpGet("test")]
         public IActionResult Test()
         {
-            return Ok(new { id = this.User.Identity.Name });
+            return Ok(new { id = GetClaim(User, ClaimEnum.Id)});
         }
     } 
 }
