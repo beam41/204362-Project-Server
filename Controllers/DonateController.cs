@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MheanMaa.Enum;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static MheanMaa.Util.ClaimSearch;
 
 namespace MheanMaa.Controllers
 {
@@ -14,20 +16,26 @@ namespace MheanMaa.Controllers
     public class DonateController : ControllerBase
     {
         private readonly DonateService _donateService;
-        private readonly UserService _userService;
 
-        public DonateController(DonateService donateService, UserService userService)
+        public DonateController(DonateService donateService)
         {
             _donateService = donateService;
-            _userService = userService;
         }
 
         [HttpGet("list")]
         public ActionResult<List<DonateList>> Get()
         {
-            User user = _userService.Find(User.Identity.Name);
-
-            return _donateService.Get(user.DeptNo).Select(don => new DonateList
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                return _donateService.Get().Select(don => new DonateList
+                {
+                    Id = don.Id,
+                    Title = don.Title,
+                    Creator = don.Creator,
+                    Accepted = don.Accepted
+                }).ToList();
+            }
+            return _donateService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(don => new DonateList
             {
                 Id = don.Id,
                 Title = don.Title,
@@ -46,8 +54,16 @@ namespace MheanMaa.Controllers
         [HttpGet("{id:length(24)}", Name = "GetDonate")]
         public ActionResult<Donate> Get(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            Donate don = _donateService.Get(id, user.DeptNo);
+            Donate don;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                don = _donateService.Get(id);
+            }
+            else
+            {
+                don = _donateService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
+                
 
             if (don == null)
             {
@@ -60,13 +76,10 @@ namespace MheanMaa.Controllers
         [HttpPost]
         public ActionResult<Donate> Create(Donate don)
         {
-            //fetch
-            User user = _userService.Find(User.Identity.Name);
-
             // prevent change
             don.Accepted = false;
-            don.Creator = user.FirstName;
-            don.DeptNo = user.DeptNo;
+            don.Creator = GetClaim(User, ClaimEnum.FirstName);
+            don.DeptNo = int.Parse(GetClaim(User, ClaimEnum.DeptNo));
             // create
             _donateService.Create(don);
 
@@ -77,8 +90,15 @@ namespace MheanMaa.Controllers
         public IActionResult Update(string id, Donate donIn)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            Donate don = _donateService.Get(id, user.DeptNo);
+            Donate don;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                don = _donateService.Get(id);
+            }
+            else
+            {
+                don = _donateService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             // not found (bc wrong dept or no donate record)
             if (don == null)
@@ -87,6 +107,7 @@ namespace MheanMaa.Controllers
             }
 
             // prevent change
+            donIn.Id = don.Id;
             donIn.Accepted = false;
             donIn.Creator = don.Creator;
             donIn.DeptNo = don.DeptNo;
@@ -99,8 +120,15 @@ namespace MheanMaa.Controllers
         public IActionResult Accept(string id)
         {
             // fetch
-            User user = _userService.Find(User.Identity.Name);
-            Donate don = _donateService.Get(id, user.DeptNo);
+            Donate don;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                don = _donateService.Get(id);
+            }
+            else
+            {
+                don = _donateService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             // not found (bc wrong dept or no donate record)
             if (don == null)
@@ -109,13 +137,13 @@ namespace MheanMaa.Controllers
             }
 
             // no reaccept
-            if (don.Accepted == false && user.UserType == "A")
+            if (don.Accepted == false && GetClaim(User, ClaimEnum.UserType) == "A")
             {
                 don.Accepted = true;
                 don.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _donateService.Update(id, don);
             } 
-            else if (user.UserType != "A")
+            else if (GetClaim(User, ClaimEnum.UserType) != "A")
             {
                 return Unauthorized();
             }
@@ -126,8 +154,15 @@ namespace MheanMaa.Controllers
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            User user = _userService.Find(User.Identity.Name);
-            Donate don = _donateService.Get(id, user.DeptNo);
+            Donate don;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                don = _donateService.Get(id);
+            }
+            else
+            {
+                don = _donateService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (don == null)
             {

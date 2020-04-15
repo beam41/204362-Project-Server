@@ -57,6 +57,22 @@ namespace MheanMaa.Models
         public string CollarColor { get; set; }
 
         public string Caretaker { get; set; }
+
+        public static explicit operator DogList(Dog dog)
+        {
+            return new DogList
+            {
+                Id = dog.Id,
+                Name = dog.Name,
+                AgeYear = dog.AgeYear,
+                AgeMonth = dog.AgeMonth,
+                Sex = dog.Sex,
+                Description = dog.Description,
+                IsAlive = dog.IsAlive,
+                CollarColor = dog.CollarColor,
+                Caretaker = dog.Caretaker
+            };
+        }
     }
 
     public class DogVisitor
