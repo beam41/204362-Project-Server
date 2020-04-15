@@ -80,6 +80,7 @@ namespace MheanMaa
             services.AddSingleton<DogService>();
             services.AddSingleton<UserService>();
             services.AddSingleton<AuthenticationService>();
+            services.AddSingleton<ImageService>();
 
             services.AddControllers();
 
