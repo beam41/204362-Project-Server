@@ -24,24 +24,26 @@ namespace MheanMaa.Controllers
         [HttpGet("list")]
         public ActionResult<List<DogList>> Get()
         {
-            return _dogService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(dog => new DogList
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
             {
-                Id = dog.Id,
-                Name = dog.Name,
-                AgeYear = dog.AgeYear,
-                AgeMonth = dog.AgeMonth,
-                Sex = dog.Sex,
-                Description = dog.Description,
-                IsAlive = dog.IsAlive,
-                CollarColor = dog.CollarColor,
-                Caretaker = dog.Caretaker
-            }).ToList();
+                return _dogService.Get().Select(dog => (DogList) dog).ToList();
+            }
+
+            return _dogService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(dog => (DogList) dog).ToList();
         }
 
         [HttpGet("{id:length(24)}", Name = "GetDog")]
         public ActionResult<Dog> Get(string id)
         {
-            Dog dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            Dog dog;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                dog = _dogService.Get(id);
+            }
+            else
+            {
+                dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (dog == null)
             {
@@ -76,7 +78,15 @@ namespace MheanMaa.Controllers
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Dog dogIn)
         {
-            Dog dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            Dog dog;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                dog = _dogService.Get(id);
+            }
+            else
+            {
+                dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (dog == null)
             {
@@ -92,7 +102,15 @@ namespace MheanMaa.Controllers
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            Dog dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            Dog dog;
+            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            {
+                dog = _dogService.Get(id);
+            }
+            else
+            {
+                dog = _dogService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+            }
 
             if (dog == null)
             {
