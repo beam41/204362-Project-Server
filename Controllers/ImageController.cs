@@ -19,7 +19,7 @@ namespace ImageUpload.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromForm]ImageData img)
+        public ActionResult Post([FromForm]ImageFormData img)
         {
             // Getting Image
             IFormFile imageDat = img.Data;
@@ -28,7 +28,7 @@ namespace ImageUpload.Controllers
                 // load image
                 try
                 {
-                    string fileName = _imageService.SaveImg(imageDat, true);
+                    string fileName = _imageService.SaveImg(imageDat);
                     return Accepted(new { fileName });
                 }
                 catch (Exception e)

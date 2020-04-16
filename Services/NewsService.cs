@@ -32,11 +32,7 @@ namespace MheanMaa.Services
         public List<News> GetAcceptedNews() =>
             _news.Find(news => news.Accepted).ToList();
 
-        public News Create(News newNews)
-        {
-            _news.InsertOne(newNews);
-            return newNews;
-        }
+        public void Create(News newNews) => _news.InsertOne(newNews);
 
         public void Update(string id, News newsIn) =>
             _news.ReplaceOne(news => news.Id == id, newsIn);

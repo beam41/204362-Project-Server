@@ -33,11 +33,7 @@ namespace MheanMaa.Services
         public List<Donate> GetAcceptedDonates() =>
             _donates.Find(don => don.Accepted).ToList();
 
-        public Donate Create(Donate newDon)
-        {
-            _donates.InsertOne(newDon);
-            return newDon;
-        }
+        public void Create(Donate newDon) => _donates.InsertOne(newDon);
 
         public void Update(string id, Donate donIn) =>
             _donates.ReplaceOne(don => don.Id == id, donIn);

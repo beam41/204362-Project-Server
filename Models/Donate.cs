@@ -16,7 +16,7 @@ namespace MheanMaa.Models
 
         public bool Accepted { get; set; }
 
-        public double AcceptedOn { get; set; }
+        public long AcceptedOn { get; set; }
 
         public string Description { get; set; }
 

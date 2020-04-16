@@ -21,23 +21,10 @@ namespace MheanMaa.Services
         public List<Report> Get() =>
             _reports.Find(_ => true).ToList();
 
-        public List<Report> Get(int deptNo) =>
-            _reports.Find(rep => rep.DeptNo == deptNo).ToList();
-
-        public Report Get(string id, int deptNo) =>
-            _reports.Find(rep => rep.Id == id && rep.DeptNo == deptNo).FirstOrDefault();
-
         public Report Get(string id) =>
             _reports.Find(rep => rep.Id == id).FirstOrDefault();
 
-        public List<Report> GetAcceptedReports() =>
-            _reports.Find(rep => rep.Accepted).ToList();
-
-        public Report Create(Report newRep)
-        {
-            _reports.InsertOne(newRep);
-            return newRep;
-        }
+        public void Create(Report newRep) => _reports.InsertOne(newRep);
 
         public void Update(string id, Report repIn) =>
             _reports.ReplaceOne(rep => rep.Id == id, repIn);

@@ -28,11 +28,7 @@ namespace MheanMaa.Services
         public Dog Get(string id) =>
             _dog.Find(dog => dog.Id == id).FirstOrDefault();
 
-        public Dog Create(Dog newDog)
-        {
-            _dog.InsertOne(newDog);
-            return newDog;
-        }
+        public void Create(Dog newDog) => _dog.InsertOne(newDog);
         public void Update(string id, Dog dogIn) =>
             _dog.ReplaceOne(dog => dog.Id == id, dogIn);
         public void Remove(Dog dogIn) =>

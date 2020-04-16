@@ -16,54 +16,29 @@ namespace MheanMaa.Controllers
     public class ReportController : ControllerBase
     {
         private readonly ReportService _reportService;
+        private readonly ImageService _imageService;
 
-        public ReportController(ReportService reportService)
+        public ReportController(ReportService reportService, ImageService imageService)
         {
             _reportService = reportService;
+            _imageService = imageService;
         }
 
         [HttpGet("list")]
         public ActionResult<List<ReportList>> Get()
         {
-            if (GetClaim(User, ClaimEnum.UserType) == "A")
-            {
-                return _reportService.Get().Select(rep => new ReportList
-                {
-                    Id = rep.Id,
-                    Title = rep.Title,
-                    Reporter = rep.Reporter,
-                    Accepted = rep.Accepted
-                }).ToList();
-            }
-            return _reportService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(rep => new ReportList
+            return _reportService.Get().Select(rep => new ReportList
             {
                 Id = rep.Id,
                 Title = rep.Title,
                 Reporter = rep.Reporter,
-                Accepted = rep.Accepted
             }).ToList();
-        }
-
-        [AllowAnonymous]
-        [HttpGet("visitor")]
-        public ActionResult<List<ReportVisitor>> GetForVisitor()
-        {
-            return _reportService.GetAcceptedReports().Select(rep => (ReportVisitor)rep).ToList();
         }
 
         [HttpGet("{id:length(24)}", Name = "GetReport")]
         public ActionResult<Report> Get(string id)
         {
-            Report rep;
-            if (GetClaim(User, ClaimEnum.UserType) == "A")
-            {
-                rep = _reportService.Get(id);
-            }
-            else
-            {
-                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
-            }
-
+            Report rep = _reportService.Get(id);
 
             if (rep == null)
             {
@@ -73,64 +48,45 @@ namespace MheanMaa.Controllers
             return rep;
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public ActionResult<Report> Create(Report rep)
+        public ActionResult<Report> Post([FromForm]ReportFormData rep)
         {
-            // prevent change
-            rep.Accepted = false;
-            rep.Reporter = GetClaim(User, ClaimEnum.FirstName);
-            rep.DeptNo = int.Parse(GetClaim(User, ClaimEnum.DeptNo));
-            // create
-            _reportService.Create(rep);
-
-            return CreatedAtRoute("GetReport", new { id = rep.Id.ToString() }, rep);
-        }
-
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Report repIn)
-        {
-            // fetch
-            Report rep;
-            if (GetClaim(User, ClaimEnum.UserType) == "A")
+            Report newRep;
+            if (rep.Img != null && (rep.Img.ContentType == "image/jpeg" || rep.Img.ContentType == "image/png"))
             {
-                rep = _reportService.Get(id);
+                newRep = new Report
+                {
+                    Reporter = rep.Reporter,
+                    ReporterContact = rep.ReporterContact,
+                    Title = rep.Title,
+                    Body = rep.Body,
+                    ImgPath = _imageService.SaveImg(rep.Img)
+                };
             }
             else
             {
-                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
+                newRep = new Report
+                {
+                    Reporter = rep.Reporter,
+                    ReporterContact = rep.ReporterContact,
+                    Title = rep.Title,
+                    Body = rep.Body,
+                };
             }
 
-            // not found (bc wrong dept or no donate record)
-            if (rep == null)
-            {
-                return NotFound();
-            }
+            _reportService.Create(newRep);
 
-            // prevent change
-            repIn.Id = rep.Id;
-            repIn.Accepted = false;
-            repIn.Reporter = rep.Reporter;
-            repIn.DeptNo = rep.DeptNo;
-            _reportService.Update(id, repIn);
-
-            return NoContent();
+            return CreatedAtRoute("GetDonate", new { id = newRep.Id.ToString() }, newRep);
         }
 
         [HttpPatch("{id:length(24)}")]
         public IActionResult Accept(string id)
         {
             // fetch
-            Report rep;
-            if (GetClaim(User, ClaimEnum.UserType) == "A")
-            {
-                rep = _reportService.Get(id);
-            }
-            else
-            {
-                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
-            }
+            Report rep = _reportService.Get(id);
 
-            // not found (bc wrong dept or no donate record)
+            // not found (bc wrong dept or no rep record)
             if (rep == null)
             {
                 return NotFound();
@@ -140,7 +96,7 @@ namespace MheanMaa.Controllers
             if (rep.Accepted == false && GetClaim(User, ClaimEnum.UserType) == "A")
             {
                 rep.Accepted = true;
-                rep.AcceptedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                rep.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _reportService.Update(id, rep);
             }
             else if (GetClaim(User, ClaimEnum.UserType) != "A")
@@ -154,17 +110,10 @@ namespace MheanMaa.Controllers
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            Report rep;
-            if (GetClaim(User, ClaimEnum.UserType) == "A")
-            {
-                rep = _reportService.Get(id);
-            }
-            else
-            {
-                rep = _reportService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
-            }
+            Report rep = _reportService.Get(id);
+            
 
-            if (rep == null)
+            if (rep == null && !rep.Accepted)
             {
                 return NotFound();
             }

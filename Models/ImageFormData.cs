@@ -2,7 +2,7 @@
 
 namespace MheanMaa.Models
 {
-    public class ImageData
+    public class ImageFormData
     {
         public IFormFile Data { get; set; }
     }

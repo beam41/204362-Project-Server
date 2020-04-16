@@ -21,7 +21,7 @@ namespace MheanMaa.Services
             _settings = settings;
         }
 
-        public string SaveImg(IFormFile imageDat, bool genPlacehold)
+        public string SaveImg(IFormFile imageDat)
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
@@ -65,14 +65,11 @@ namespace MheanMaa.Services
                          .Resize((int)Math.Round(image.Width / 10.0), (int)Math.Round(image.Height / 10.0))
                         );
 
-                        if (genPlacehold)
+                        JpegEncoder encoder2 = new JpegEncoder()
                         {
-                            JpegEncoder encoder2 = new JpegEncoder()
-                            {
-                                Quality = 10
-                            };
-                            image.Save(Path.Join(_environment.WebRootPath, "placeholder", newFName), encoder2);
-                        }
+                            Quality = 10
+                        };
+                        image.Save(Path.Join(_environment.WebRootPath, "placeholder", newFName), encoder2);
                         
                         return newFName;
                     }
