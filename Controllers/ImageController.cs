@@ -23,16 +23,20 @@ namespace ImageUpload.Controllers
         {
             // Getting Image
             IFormFile imageDat = img.Data;
-            // load image
-            try
+            if (img.Data.ContentType == "image/jpeg" || img.Data.ContentType == "image/png")
             {
-                string fileName = _imageService.SaveImg(imageDat, true);
-                return Accepted(new { fileName });
+                // load image
+                try
+                {
+                    string fileName = _imageService.SaveImg(imageDat, true);
+                    return Accepted(new { fileName });
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return BadRequest();
         }
     }
 }
