@@ -75,6 +75,20 @@ namespace MheanMaa.Controllers
             }).ToList();
         }
 
+        [AllowAnonymous]
+        [HttpGet("visitor/{id:length(24)}")]
+        public ActionResult<Dog> GetForVisitor(string id)
+        {
+            Dog dog;
+            dog = _dogService.Get(id);
+            if (dog == null)
+            {
+                return NotFound();
+            }
+
+            return dog;
+        }
+
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Dog dogIn)
         {
