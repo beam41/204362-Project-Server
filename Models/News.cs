@@ -15,8 +15,6 @@ namespace MheanMaa.Models
 
         public bool Accepted { get; set; }
 
-        public string Acceptor { get; set; }
-
         public string Writer { get; set; }
 
         public double WriteDate { get; set; }
