@@ -18,6 +18,8 @@ namespace MheanMaa.Models
 
         public long AcceptedOn { get; set; }
 
+        public string AcceptedBy { get; set; }
+
         public string Description { get; set; }
 
         public string QrLink { get; set; }

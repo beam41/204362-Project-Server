@@ -141,6 +141,7 @@ namespace MheanMaa.Controllers
             {
                 don.Accepted = true;
                 don.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                don.AcceptedBy = GetClaim(User, ClaimEnum.FirstName);
                 _donateService.Update(id, don);
             } 
             else if (GetClaim(User, ClaimEnum.UserType) != "A")

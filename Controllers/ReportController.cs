@@ -32,6 +32,7 @@ namespace MheanMaa.Controllers
                 Id = rep.Id,
                 Title = rep.Title,
                 Reporter = rep.Reporter,
+                Accepted = rep.Accepted,
             }).ToList();
         }
 
@@ -97,6 +98,7 @@ namespace MheanMaa.Controllers
             {
                 rep.Accepted = true;
                 rep.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                rep.AcceptedBy = GetClaim(User, ClaimEnum.FirstName);
                 _reportService.Update(id, rep);
             }
             else if (GetClaim(User, ClaimEnum.UserType) != "A")
@@ -113,9 +115,19 @@ namespace MheanMaa.Controllers
             Report rep = _reportService.Get(id);
             
 
-            if (rep == null && !rep.Accepted)
+            if (rep == null)
             {
                 return NotFound();
+            }
+
+            if (!rep.Accepted)
+            {
+                return Forbid();
+            }
+
+            if (GetClaim(User, ClaimEnum.UserType) != "A")
+            {
+                return Unauthorized();
             }
 
             _reportService.Remove(rep);
