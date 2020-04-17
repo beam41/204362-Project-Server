@@ -1,5 +1,4 @@
-﻿using System.Text;
-using MheanMaa.Services;
+﻿using MheanMaa.Services;
 using MheanMaa.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace MheanMaa
 {

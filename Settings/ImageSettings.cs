@@ -1,6 +1,6 @@
 ﻿namespace MheanMaa.Settings
 {
-    public class ImageSettings: IImageSettings
+    public class ImageSettings : IImageSettings
     {
         public int MaxWidth { get; set; }
     }

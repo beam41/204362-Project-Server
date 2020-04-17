@@ -1,4 +1,5 @@
 ﻿using MheanMaa.Models;
+using MheanMaa.Services.Interface;
 using MheanMaa.Settings;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace MheanMaa.Services
 {
-    public class ReportService
+    public class ReportService : IMongoServiceBase<Report>
     {
         private readonly IMongoCollection<Report> _reports;
 
@@ -31,8 +32,5 @@ namespace MheanMaa.Services
 
         public void Remove(Report repIn) =>
             _reports.DeleteOne(rep => rep.Id == repIn.Id);
-
-        public void Remove(string id) =>
-            _reports.DeleteOne(rep => rep.Id == id);
     }
 }

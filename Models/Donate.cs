@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
 
 namespace MheanMaa.Models
 {
@@ -50,7 +49,7 @@ namespace MheanMaa.Models
 
         public string Title { get; set; }
 
-        public double AcceptedOn { get; set; }
+        public long AcceptedOn { get; set; }
 
         public string Description { get; set; }
 
@@ -70,5 +69,16 @@ namespace MheanMaa.Models
                 ImgPath = d.ImgPath,
             };
         }
+    }
+
+    public class DonateHome
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        public string Title { get; set; }
+
+        public string ImgPath { get; set; }
     }
 }

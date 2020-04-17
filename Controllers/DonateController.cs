@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MheanMaa.Enum;
+﻿using MheanMaa.Enum;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static MheanMaa.Util.ClaimSearch;
 
 namespace MheanMaa.Controllers
@@ -48,7 +48,20 @@ namespace MheanMaa.Controllers
         [HttpGet("visitor")]
         public ActionResult<List<DonateVisitor>> GetForVisitor()
         {
-            return _donateService.GetAcceptedDonates().Select(don => (DonateVisitor) don).ToList();
+            return _donateService.GetAcceptedDonates().Select(don => (DonateVisitor)don).ToList();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("random/{len}")]
+        public ActionResult<List<DonateHome>> GetRandom(int len)
+        {
+            Random rng = new Random();
+            return _donateService.Get().OrderBy(_ => rng.Next()).Take(len).Select(don => new DonateHome 
+            { 
+                Id= don.Id,
+                Title = don.Title,
+                ImgPath = don.ImgPath
+            }).ToList();
         }
 
         [HttpGet("{id:length(24)}", Name = "GetDonate")]
@@ -63,7 +76,7 @@ namespace MheanMaa.Controllers
             {
                 don = _donateService.Get(id, int.Parse(GetClaim(User, ClaimEnum.DeptNo)));
             }
-                
+
 
             if (don == null)
             {
@@ -143,12 +156,12 @@ namespace MheanMaa.Controllers
                 don.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 don.AcceptedBy = GetClaim(User, ClaimEnum.FirstName);
                 _donateService.Update(id, don);
-            } 
+            }
             else if (GetClaim(User, ClaimEnum.UserType) != "A")
             {
                 return Unauthorized();
             }
-            
+
             return NoContent();
         }
 

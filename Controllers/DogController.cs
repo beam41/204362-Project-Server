@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using MheanMaa.Enum;
+﻿using MheanMaa.Enum;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static MheanMaa.Util.ClaimSearch;
 
 namespace MheanMaa.Controllers
@@ -26,10 +27,10 @@ namespace MheanMaa.Controllers
         {
             if (GetClaim(User, ClaimEnum.UserType) == "A")
             {
-                return _dogService.Get().Select(dog => (DogList) dog).ToList();
+                return _dogService.Get().Select(dog => (DogList)dog).ToList();
             }
 
-            return _dogService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(dog => (DogList) dog).ToList();
+            return _dogService.Get(int.Parse(GetClaim(User, ClaimEnum.DeptNo))).Select(dog => (DogList)dog).ToList();
         }
 
         [HttpGet("{id:length(24)}", Name = "GetDog")]
@@ -73,6 +74,19 @@ namespace MheanMaa.Controllers
                 ImgPath = dog.ImgPath,
 
             }).ToList();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("random/{len}")]
+        public ActionResult<List<DogVisitor>> GetRandom(int len)
+        {
+            Random rng = new Random();
+            return _dogService.Get().OrderBy(_ => rng.Next()).Take(len).Select(dog => new DogVisitor
+            {
+                Id = dog.Id,
+                Name = dog.Name,
+                ImgPath = dog.ImgPath,
+            }).ToList(); ;
         }
 
         [AllowAnonymous]

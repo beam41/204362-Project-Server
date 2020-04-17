@@ -1,12 +1,12 @@
 ﻿using MheanMaa.Settings;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
+using System.IO;
 
 namespace MheanMaa.Services
 {
@@ -51,9 +51,15 @@ namespace MheanMaa.Services
                     try
                     {
                         if (!Directory.Exists(Path.Join(_environment.WebRootPath, "uploads")))
+                        {
                             Directory.CreateDirectory(Path.Join(_environment.WebRootPath, "uploads"));
+                        }
+
                         if (!Directory.Exists(Path.Join(_environment.WebRootPath, "placeholder")))
+                        {
                             Directory.CreateDirectory(Path.Join(_environment.WebRootPath, "placeholder"));
+                        }
+
                         JpegEncoder encoder = new JpegEncoder()
                         {
                             Quality = 60
@@ -70,7 +76,7 @@ namespace MheanMaa.Services
                             Quality = 10
                         };
                         image.Save(Path.Join(_environment.WebRootPath, "placeholder", newFName), encoder2);
-                        
+
                         return newFName;
                     }
                     catch (Exception e)

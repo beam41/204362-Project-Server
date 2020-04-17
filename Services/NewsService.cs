@@ -1,4 +1,5 @@
 using MheanMaa.Models;
+using MheanMaa.Services.Interface;
 using MheanMaa.Settings;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace MheanMaa.Services
 {
-    public class NewsService
+    public class NewsService : IMongoServiceBaseExtended<News>
     {
         private readonly IMongoCollection<News> _news;
         public NewsService(IDBSettings settings)
@@ -39,8 +40,5 @@ namespace MheanMaa.Services
 
         public void Remove(News newsIn) =>
             _news.DeleteOne(news => news.Id == newsIn.Id);
-
-        public void Remove(string id) =>
-            _news.DeleteOne(news => news.Id == id);
     }
 }

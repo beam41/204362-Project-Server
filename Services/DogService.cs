@@ -1,4 +1,5 @@
 ﻿using MheanMaa.Models;
+using MheanMaa.Services.Interface;
 using MheanMaa.Settings;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace MheanMaa.Services
 {
-    public class DogService
+    public class DogService : IMongoServiceBaseExtended<Dog>
     {
         private readonly IMongoCollection<Dog> _dog;
         public DogService(IDBSettings settings)
@@ -29,11 +30,11 @@ namespace MheanMaa.Services
             _dog.Find(dog => dog.Id == id).FirstOrDefault();
 
         public void Create(Dog newDog) => _dog.InsertOne(newDog);
+
         public void Update(string id, Dog dogIn) =>
             _dog.ReplaceOne(dog => dog.Id == id, dogIn);
+
         public void Remove(Dog dogIn) =>
             _dog.DeleteOne(dog => dog.Id == dogIn.Id);
-        public void Remove(string id) =>
-            _dog.DeleteOne(dog => dog.Id == id);
     }
 }

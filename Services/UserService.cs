@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using MheanMaa.Models;
+﻿using MheanMaa.Models;
 using MheanMaa.Settings;
 using MongoDB.Driver;
+using System.Linq;
 
 namespace MheanMaa.Services
 {
@@ -21,6 +21,6 @@ namespace MheanMaa.Services
             _users.Find(usr => usr.Id == id).FirstOrDefault();
 
         public User Find(string username, string password) =>
-            _users.Find(usr => usr.Username == username && usr.Password == password ).FirstOrDefault();
+            _users.Find(usr => usr.Username == username && usr.Password == password).FirstOrDefault();
     }
 }

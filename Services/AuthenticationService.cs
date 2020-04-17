@@ -27,7 +27,9 @@ namespace MheanMaa.Services
 
             // return null if user not found
             if (user == null)
+            {
                 return null;
+            }
 
             // authentication successful so generate jwt token
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -45,7 +47,7 @@ namespace MheanMaa.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            UserReturn userReturn = (UserReturn) user;
+            UserReturn userReturn = (UserReturn)user;
             userReturn.Token = tokenHandler.WriteToken(token);
 
             return userReturn;

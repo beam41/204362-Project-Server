@@ -1,11 +1,11 @@
-﻿using System;
-using MheanMaa.Models;
+﻿using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
-namespace ImageUpload.Controllers
+namespace MheanMaa.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
