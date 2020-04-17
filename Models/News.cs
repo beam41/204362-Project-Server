@@ -11,15 +11,17 @@ namespace MheanMaa.Models
 
         public string Title { get; set; }
 
-        public string Description { get; set; }
-
-        public bool Accepted { get; set; }
+        public string Detail { get; set; }
 
         public string Writer { get; set; }
 
-        public double WriteDate { get; set; }
+        public long WroteOn { get; set; }
 
-        public double AcceptedDate { get; set; }
+        public bool Accepted { get; set; }
+
+        public string AcceptedBy { get; set; }
+
+        public long AcceptedOn { get; set; }
 
         public string ImgPath { get; set; }
 
@@ -47,9 +49,9 @@ namespace MheanMaa.Models
 
         public string Title { get; set; }
 
-        public double AcceptedDate { get; set; }
+        public long AcceptedOn { get; set; }
 
-        public string Description { get; set; }
+        public string Detail { get; set; }
 
         public string ImgPath { get; set; }
 
@@ -59,8 +61,8 @@ namespace MheanMaa.Models
             {
                 Id = n.Id,
                 Title = n.Title,
-                AcceptedDate = n.AcceptedDate,
-                Description = n.Description,
+                AcceptedOn = n.AcceptedOn,
+                Detail = n.Detail,
                 ImgPath = n.ImgPath,
             };
         }

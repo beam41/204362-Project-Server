@@ -78,6 +78,7 @@ namespace MheanMaa.Controllers
         {
             // prevent change
             news.Accepted = false;
+            news.WroteOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             news.Writer = GetClaim(User, ClaimEnum.FirstName);
             news.DeptNo = int.Parse(GetClaim(User, ClaimEnum.DeptNo));
             // create
@@ -140,7 +141,8 @@ namespace MheanMaa.Controllers
             if (news.Accepted == false && GetClaim(User, ClaimEnum.UserType) == "A")
             {
                 news.Accepted = true;
-                news.AcceptedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                news.AcceptedBy = GetClaim(User, ClaimEnum.FirstName);
+                news.AcceptedOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 _newsService.Update(id, news);
             }
             else if (GetClaim(User, ClaimEnum.UserType) != "A")
