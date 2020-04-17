@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MheanMaa.Services.Interface
 {
-    interface IMongoServiceBaseExtended<T> : IMongoServiceBase<T>
+    internal interface IMongoServiceBaseExtended<T> : IMongoServiceBase<T>
     {
         public List<T> Get(int deptNo);
 
