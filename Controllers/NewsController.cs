@@ -51,6 +51,31 @@ namespace MheanMaa.Controllers
             return _newsService.GetAcceptedNews().Select(news => (NewsVisitor)news).ToList();
         }
 
+        [AllowAnonymous]
+        [HttpGet("visitor/{len}")]
+        public ActionResult<List<NewsVisitor>> GetForVisitor(int len)
+        {
+            return _newsService
+                .GetAcceptedNews()
+                .OrderByDescending(news => news.AcceptedOn)
+                .Take(len).Select(news => (NewsVisitor)news)
+                .ToList();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("visitor/{id:length(24)}")]
+        public ActionResult<News> GetForVisitor(string id)
+        {
+            News news;
+            news = _newsService.Get(id);
+            if (news == null && !news.Accepted)
+            {
+                return NotFound();
+            }
+
+            return news;
+        }
+
         [HttpGet("{id:length(24)}", Name = "GetNews")]
         public ActionResult<News> Get(string id)
         {

@@ -27,6 +27,7 @@ namespace MheanMaa.Models
 
         public int DeptNo { get; set; }
     }
+
     public class NewsList
     {
         [BsonId]
@@ -49,6 +50,8 @@ namespace MheanMaa.Models
 
         public string Title { get; set; }
 
+        public string Writer { get; set; }
+
         public long AcceptedOn { get; set; }
 
         public string Detail { get; set; }
@@ -61,6 +64,7 @@ namespace MheanMaa.Models
             {
                 Id = n.Id,
                 Title = n.Title,
+                Writer = n.Writer,
                 AcceptedOn = n.AcceptedOn,
                 Detail = n.Detail,
                 ImgPath = n.ImgPath,
