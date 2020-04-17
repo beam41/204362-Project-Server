@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace MheanMaa.Models
 {
@@ -66,7 +67,7 @@ namespace MheanMaa.Models
                 Title = n.Title,
                 Writer = n.Writer,
                 AcceptedOn = n.AcceptedOn,
-                Detail = n.Detail.Substring(0, 128 % n.Detail.Length),
+                Detail = n.Detail.Substring(0, Math.Min(n.Detail.Length, 128)),
                 ImgPath = n.ImgPath,
             };
         }
