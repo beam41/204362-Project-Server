@@ -56,7 +56,7 @@ namespace MheanMaa.Controllers
         public ActionResult<List<DonateHome>> GetRandom(int len)
         {
             Random rng = new Random();
-            return _donateService.Get().OrderBy(_ => rng.Next()).Take(len).Select(don => new DonateHome
+            return _donateService.GetAcceptedDonates().OrderBy(_ => rng.Next()).Take(len).Select(don => new DonateHome
             {
                 Id = don.Id,
                 Title = don.Title,

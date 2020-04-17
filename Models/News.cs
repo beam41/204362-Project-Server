@@ -66,7 +66,7 @@ namespace MheanMaa.Models
                 Title = n.Title,
                 Writer = n.Writer,
                 AcceptedOn = n.AcceptedOn,
-                Detail = n.Detail,
+                Detail = n.Detail.Substring(0, 128 % n.Detail.Length),
                 ImgPath = n.ImgPath,
             };
         }
