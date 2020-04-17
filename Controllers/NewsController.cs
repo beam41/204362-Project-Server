@@ -68,9 +68,14 @@ namespace MheanMaa.Controllers
         {
             News news;
             news = _newsService.Get(id);
-            if (news == null && !news.Accepted)
+            if (news == null)
             {
                 return NotFound();
+            }
+
+            if (!news.Accepted)
+            {
+                return Unauthorized();
             }
 
             return news;
