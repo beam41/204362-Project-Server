@@ -1,5 +1,5 @@
 using MheanMaa.Models;
-using MheanMaa.Services.Interface;
+using MheanMaa.Services.Interfaces;
 using MheanMaa.Settings;
 using MongoDB.Driver;
 using System.Collections.Generic;

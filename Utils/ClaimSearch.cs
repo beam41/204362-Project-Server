@@ -1,8 +1,8 @@
-﻿using MheanMaa.Enum;
+﻿using MheanMaa.Enums;
 using System.Linq;
 using System.Security.Claims;
 
-namespace MheanMaa.Util
+namespace MheanMaa.Utils
 {
     public class ClaimSearch
     {

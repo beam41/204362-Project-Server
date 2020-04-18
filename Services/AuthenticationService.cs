@@ -1,4 +1,4 @@
-﻿using MheanMaa.Enum;
+﻿using MheanMaa.Enums;
 using MheanMaa.Models;
 using MheanMaa.Settings;
 using Microsoft.IdentityModel.Tokens;

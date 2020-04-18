@@ -1,4 +1,4 @@
-using MheanMaa.Enum;
+using MheanMaa.Enums;
 using MheanMaa.Models;
 using MheanMaa.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static MheanMaa.Util.ClaimSearch;
+using static MheanMaa.Utils.ClaimSearch;
 
 namespace MheanMaa.Controllers
 {

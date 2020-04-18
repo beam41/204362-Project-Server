@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MheanMaa.Services.Interface
+namespace MheanMaa.Services.Interfaces
 {
     internal interface IMongoServiceBaseExtended<T> : IMongoServiceBase<T>
     {

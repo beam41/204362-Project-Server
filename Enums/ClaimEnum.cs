@@ -1,4 +1,4 @@
-﻿namespace MheanMaa.Enum
+﻿namespace MheanMaa.Enums
 {
     public enum ClaimEnum
     {
