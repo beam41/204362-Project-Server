@@ -12,8 +12,8 @@ namespace MheanMaa.Services
 {
     public class ImageService
     {
-        public IWebHostEnvironment _environment;
-        public IImageSettings _settings;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IImageSettings _settings;
 
         public ImageService(IWebHostEnvironment environment, IImageSettings settings)
         {

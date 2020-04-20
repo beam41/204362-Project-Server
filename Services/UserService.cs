@@ -17,9 +17,6 @@ namespace MheanMaa.Services
             _users = database.GetCollection<User>(settings.UsersColName);
         }
 
-        public User Find(string id) =>
-            _users.Find(usr => usr.Id == id).FirstOrDefault();
-
         public User Find(string username, string password) =>
             _users.Find(usr => usr.Username == username && usr.Password == password).FirstOrDefault();
     }
